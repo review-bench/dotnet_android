@@ -79,7 +79,7 @@ namespace Xamarin.ProjectTools
 			SetProperty (KnownProperties.ImplicitUsings, "enable");
 			SetProperty ("XamarinAndroidSupportSkipVerifyVersions", "True");
 			SetProperty ("_FastDeploymentDiagnosticLogging", "True");
-			SupportedOSPlatformVersion = "21.0";
+			SupportedOSPlatformVersion = "24.0";
 
 			AndroidManifest = default_android_manifest;
 			LayoutMain = default_layout_main;
@@ -112,7 +112,7 @@ namespace Xamarin.ProjectTools
 		public string MinSdkVersion { get; set; }
 
 		/// <summary>
-		/// Defaults to 21.0
+		/// Defaults to 24.0
 		/// </summary>
 		public string SupportedOSPlatformVersion {
 			get { return GetProperty (KnownProperties.SupportedOSPlatformVersion); }
@@ -198,13 +198,12 @@ namespace Xamarin.ProjectTools
 		/// <summary>
 		/// Sets properties required for $(PublishAot)=true
 		/// </summary>
-		public void SetPublishAot (bool value, string androidNdkPath)
+		public void SetPublishAot (bool value)
 		{
 			// Only toggle IsRelease=true when value is true
 			if (value)
 				IsRelease = true;
 			PublishAot = value;
-			SetProperty ("AndroidNdkDirectory", androidNdkPath);
 		}
 
 		public string AndroidManifest { get; set; }

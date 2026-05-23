@@ -478,30 +478,6 @@ In this message, the term "binding" means a piece of generated code that makes i
     <value>'RunAOTCompilation' MSBuild プロパティは、トリミングが有効な場合にのみサポートされます。テキスト エディターでプロジェクト ファイルを編集して、このビルド構成の 'PublishTrimmed' を 'true' に設定します。</value>
     <comment>The following are literal names and should not be translated: 'RunAOTCompilation', 'PublishTrimmed'</comment>
   </data>
-  <data name="XA1031" xml:space="preserve">
-    <value>'AndroidHttpClientHandlerType' プロパティ値 '{0}' は '{1}' から派生する必要があります。
-値を '{1}' から継承するアセンブリ修飾型名に変更するか、プロパティを完全に削除してください。</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType',
-{0} - The value of the property.
-{1} - A type from which the AndroidHttpClientHandlerType should derive .</comment>
-  </data>
-  <data name="XA1031_HCH" xml:space="preserve">
-    <value>'AndroidHttpClientHandlerType' プロパティ値 '{0}' は 'System.Net.Htt.HttpClientHandler' から派生することはできません。
-値を 'System.Net.Http.HttpMessageHandler' から継承する assembly-qualifed 型名に変更するか、プロパティを完全に削除してください。</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType', 'System.Net.Htt.HttpClientHandler', 'System.Net.Http.HttpMessageHandler',
-{0} - The value of the property.</comment>
-  </data>
-  <data name="XA1032" xml:space="preserve">
-    <value>'{1}' から '{0}' を解決できませんでした。`AndroidHttpClientHandlerType` の設定を確認してください。</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType',
-{0} - The value of the property.
-{1} - The name of the assembly.</comment>
-  </data>
-  <data name="XA1033" xml:space="preserve">
-    <value>'{0}' を解決できませんでした。`AndroidHttpClientHandlerType` の設定を確認してください。</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType',
-{0} - The value of the property.</comment>
-  </data>
   <data name="XA1034" xml:space="preserve">
     <value>プロジェクトは `_Microsoft.Android.Resource.Designer` アセンブリを使用する '{0}' を参照していますが、この機能を有効にしていません。プロジェクト ファイルで `AndroidUseDesignerAssembly` MSBuild プロパティを `true` に設定してください。</value>
     <comment>The following are literal names and should not be translated: '_Microsoft.Android.Resource.Desinger', 'AndroidUseDesignerAssembly', 'true'
@@ -590,6 +566,10 @@ $(SupportedOSPlatformVersion) 値に一致するように AndroidManifest.xml �
     <value>ネイティブの共有ライブラリをリンクできませんでした: {0}{1}</value>
     <comment>The '{1}' placeholder is replaced with full output of the failed command, starting and ending with a newline.</comment>
   </data>
+  <data name="XA3008" xml:space="preserve">
+    <value>Failed to extract debug info from '{0}'{1}</value>
+    <comment>'{0}' is the native shared library filename. '{1}' is the full output of the failed command, starting and ending with a newline.</comment>
+  </data>
   <data name="XA4209" xml:space="preserve">
     <value>{1} のため、クラス {0} の Java の型を生成できませんでした</value>
     <comment>{0} - The managed type name
@@ -648,6 +628,12 @@ $(SupportedOSPlatformVersion) 値に一致するように AndroidManifest.xml �
 {0} - The target SDK version number
 {1} - The API version number</comment>
   </data>
+  <data name="XA4217" xml:space="preserve">
+    <value>Architecture '{0}' has Java types which have no counterparts in template architecture '{1}': {2}</value>
+    <comment>{0} - The target architecture name
+{1} - The template architecture name
+{2} - Comma-separated list of Java type names that have no counterparts</comment>
+  </data>
   <data name="XA4218" xml:space="preserve">
     <value>パスに //manifest/application/uses-library が見つかりませんでした: {0}</value>
     <comment>The following are literal names and should not be translated: //manifest/application/uses-library</comment>
@@ -698,6 +684,11 @@ In this mesage, the term "layout" means an Android UI layout.
     <value>リソース項目 '{0}' に、必要なメタデータ項目 '{1}' がありません。</value>
     <comment>{0} - The name of the Android layout resource file
 {1} - The name of the metadata item</comment>
+  </data>
+  <data name="XA4227" xml:space="preserve">
+    <value>Architecture '{0}' doesn't match all marshal methods in architecture '{1}'. Please see detailed MSBuild logs for more information.</value>
+    <comment>{0} - The target architecture name
+{1} - The template architecture name</comment>
   </data>
   <data name="XA4228" xml:space="preserve">
     <value>指定された //activity-alias/@android:targetActivity '{0}' が見つかりません</value>
@@ -921,6 +912,12 @@ In this message, the term "handheld app" means "app for handheld devices."
   <data name="XA5302" xml:space="preserve">
     <value>2 つのプロセスがこのプロジェクトを同時にビルドしている可能性があります。ロック ファイルはパス {0} に存在します</value>
   </data>
+  <data name="XA5303" xml:space="preserve">
+    <value>Failed to parse 'DescriptorIndex' metadata value '{0}' for assembly '{1}'.</value>
+    <comment>
+{0} - The DescriptorIndex metadata value that could not be parsed
+{1} - The assembly ItemSpec</comment>
+  </data>
   <data name="XA_Manifest_AutoGenerated_Header" xml:space="preserve">
     <value>
     このコードはツールによって生成されました。
@@ -1016,6 +1013,18 @@ In this message, the term "handheld app" means "app for handheld devices."
 {1} - The name of the .NET runtime (e.g. CoreCLR, NativeAOT).
 </comment>
   </data>
+  <data name="XA1045" xml:space="preserve">
+    <value>入力ファイル `{0}` は `&lt;replacements/&gt;` で始まっていません。</value>
+    <comment>{0} - file path</comment>
+  </data>
+  <data name="XA1046" xml:space="preserve">
+    <value>要素 '{1}' の属性 '{0}' には、ブール値として解析できない値 '{2}' があります。{3} 行 {4}。</value>
+    <comment>{0} - attribute name; {1} - element name; {2} - attribute value; {3} - file path; {4} - line number</comment>
+  </data>
+  <data name="XA1047" xml:space="preserve">
+    <value>必須属性 '{0}' が要素 '{1}' にありません。{2} 行 {3}。</value>
+    <comment>{0} - attribute name; {1} - element name; {2} - file path; {3} - line number</comment>
+  </data>
   <data name="XA4241" xml:space="preserve">
     <value>Java 依存関係 '{0}' が満たされていません。</value>
     <comment>The following are literal names and should not be translated: Java.
@@ -1080,6 +1089,20 @@ In this message, the term "handheld app" means "app for handheld devices."
     <value>マニフェスト参照型 '{0}' がスキャンされたアセンブリに見つかりませんでした。フレームワーク型である可能性があります。</value>
     <comment>The following are literal names and should not be translated: Manifest, framework.
 {0} - Java type name from AndroidManifest.xml</comment>
+  </data>
+  <data name="XA4251" xml:space="preserve">
+    <value>型 '{0}' は [JniAddNativeMethodRegistrationAttribute] を使用していますが、これはトリミング可能な型マップではサポートされていません。これを回避するには、トリミング可能な型マップを対象にしないでください (たとえば、'llvm-ir' 型マップの実装に切り替えます)。また、このシナリオを https://github.com/dotnet/android/issues で報告してください。チームがサポートするかどうかを評価できます。</value>
+    <comment>The following are literal names and should not be translated: JniAddNativeMethodRegistrationAttribute, llvm-ir.
+{0} - Fully-qualified managed type name</comment>
+  </data>
+  <data name="XA4252" xml:space="preserve">
+    <value>セキュリティで保護されていない HTTP Maven リポジトリ URL '{0}' は許可されていません。HTTPS URL を使用するか、項目に AllowInsecureHttp="true" メタデータを設定して、このチェックをオーバーライドします。</value>
+    <comment>The following are literal names and should not be translated: HTTP, HTTPS, Maven, AllowInsecureHttp
+{0} - The insecure HTTP URL</comment>
+  </data>
+  <data name="XA4253" xml:space="preserve">
+    <value>Generated Java callable wrapper code changed: '{0}'</value>
+    <comment>{0} - The path to the generated Java callable wrapper file</comment>
   </data>
   <data name="XA0142" xml:space="preserve">
     <value>コマンド '{0}' が失敗しました。\n{1}</value>

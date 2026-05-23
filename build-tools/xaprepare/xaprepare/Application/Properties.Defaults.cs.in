@@ -10,7 +10,6 @@ namespace Xamarin.Android.Prepare
 			properties.Add (KnownProperties.AndroidCmakeVersion,                 StripQuotes ("@AndroidCmakeVersion@"));
 			properties.Add (KnownProperties.AndroidCmakeVersionPath,             StripQuotes (@"@AndroidCmakeVersionPath@"));
 			properties.Add (KnownProperties.AndroidMinimumDotNetApiLevel,        StripQuotes ("@AndroidMinimumDotNetApiLevel@"));
-			properties.Add (KnownProperties.AndroidMinimumNonMonoApiLevel,       StripQuotes ("@AndroidMinimumNonMonoApiLevel@"));
 			properties.Add (KnownProperties.AndroidDefaultTargetDotnetApiLevel,  StripQuotes ("@AndroidDefaultTargetDotnetApiLevel@"));
 			properties.Add (KnownProperties.AndroidLatestStableApiLevel,         StripQuotes ("@AndroidLatestStableApiLevel@"));
 			properties.Add (KnownProperties.AndroidLatestUnstableApiLevel,       StripQuotes ("@AndroidLatestUnstableApiLevel@"));
@@ -40,19 +39,13 @@ namespace Xamarin.Android.Prepare
 			properties.Add (KnownProperties.EmulatorVersion,                     StripQuotes ("@EmulatorVersion@"));
 			properties.Add (KnownProperties.EmulatorPkgRevision,                 StripQuotes ("@EmulatorPkgRevision@"));
 			properties.Add (KnownProperties.HostOS,                              StripQuotes ("@HostOS@"));
-			properties.Add (KnownProperties.IgnoreMaxMonoVersion,                StripQuotes ("@IgnoreMaxMonoVersion@"));
-			properties.Add (KnownProperties.IgnoreMinMonoVersion,                StripQuotes ("@IgnoreMinMonoVersion@"));
 			properties.Add (KnownProperties.JavaInteropFullPath,                 StripQuotes (@"@JavaInteropFullPath@"));
 			properties.Add (KnownProperties.JavaSdkDirectory,                    StripQuotes (@"@JavaSdkDirectory@"));
 			properties.Add (KnownProperties.JdkIncludePath,                      StripQuotes (@"@JdkIncludePath@"));
 			properties.Add (KnownProperties.LibZipSourceFullPath,                StripQuotes (@"@LibZipSourceFullPath@"));
-			properties.Add (KnownProperties.ManagedRuntime,                      StripQuotes (@"@ManagedRuntime@"));
 			properties.Add (KnownProperties.MicrosoftAndroidSdkOutDir,           StripQuotes (@"@MicrosoftAndroidSdkOutDir@"));
 			properties.Add (KnownProperties.MonoCecilVersion,                    StripQuotes ("@MonoCecilVersion@"));
-			properties.Add (KnownProperties.MonoDarwinPackageUrl,                StripQuotes ("@MonoDarwinPackageUrl@"));
 			properties.Add (KnownProperties.MonoRuntimeFlavorDirName,            StripQuotes ("@_MonoRuntimeFlavorDirName@"));
-			properties.Add (KnownProperties.MonoRequiredMinimumVersion,          StripQuotes ("@MonoRequiredMinimumVersion@"));
-			properties.Add (KnownProperties.MonoRequiredMaximumVersion,          StripQuotes ("@MonoRequiredMaximumVersion@"));
 			properties.Add (KnownProperties.MonoSourceFullPath,                  StripQuotes (@"@MonoSourceFullPath@"));
 			properties.Add (KnownProperties.NativeRuntimeOutputRootDir,          StripQuotes (@"@NativeRuntimeOutputRootDir@"));
 			properties.Add (KnownProperties.NinjaPath,                           StripQuotes (@"@NinjaPath@"));
@@ -63,10 +56,6 @@ namespace Xamarin.Android.Prepare
 			properties.Add (KnownProperties.TestOutputDirectory,                 StripQuotes (@"@TestOutputDirectory@"));
 			properties.Add (KnownProperties.XABuildToolsFolder,                  StripQuotes (@"@XABuildToolsFolder@"));
 			properties.Add (KnownProperties.XABuildToolsVersion,                 StripQuotes ("@XABuildToolsVersion@"));
-			properties.Add (KnownProperties.XABuildToolsPackagePrefixMacOS,      StripQuotes ("@XABuildToolsPackagePrefixMacOS@"));
-			properties.Add (KnownProperties.XABuildToolsPackagePrefixWindows,    StripQuotes ("@XABuildToolsPackagePrefixWindows@"));
-			properties.Add (KnownProperties.XABuildToolsPackagePrefixLinux,      StripQuotes ("@XABuildToolsPackagePrefixLinux@"));
-			properties.Add (KnownProperties.XABuildToolsPackagePrefix,           StripQuotes ("@XABuildToolsPackagePrefix@"));
 			properties.Add (KnownProperties.XABinRelativeInstallPrefix,          StripQuotes (@"@XABinRelativeInstallPrefix@"));
 			properties.Add (KnownProperties.XAInstallPrefix,                     StripQuotes (@"@XAInstallPrefix@"));
 			properties.Add (KnownProperties.XAPackagesDir,                       StripQuotes (@"@XAPackagesDir@"));

@@ -1,6 +1,5 @@
 using Android.Runtime;
 using Java.Interop;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.Android.Runtime;
@@ -56,27 +55,23 @@ static partial class JavaInteropRuntime
 
 			// This needs to be called first, since it sets up locations, environment variables, logging etc
 			XA_Host_NativeAOT_OnInit (language, filesDir, cacheDir, ref initArgs);
-			JNIEnvInit.InitializeJniRuntimeEarly (initArgs);
+			JNIEnvInit.InitializeBeforeRuntimeCreation (initArgs);
 
 			var settings    = new DiagnosticSettings ();
 			settings.AddDebugDotnetLog ();
 
-			InitializeTrimmableTypeMapData ();
-			var typeManager = CreateTypeManager ();
-
 			var options = new NativeAotRuntimeOptions {
 				EnvironmentPointer          = jnienv,
 				ClassLoader                 = new JniObjectReference (classLoader, JniObjectReferenceType.Global),
-				TypeManager                 = typeManager,
-				ValueManager                = new JavaMarshalValueManager (),
+				TypeManager                 = JNIEnvInit.CreateTypeManager (initArgs),
+				ValueManager                = JNIEnvInit.CreateValueManager (),
 				JniGlobalReferenceLogWriter = settings.GrefLog,
 				JniLocalReferenceLogWriter  = settings.LrefLog,
 			};
 			runtime = options.CreateJreVM ();
 
-			// Entry point into Mono.Android.dll. Log categories are initialized in JNI_OnLoad.
-			JNIEnvInit.InitializeJniRuntime (runtime, initArgs);
-			RegisterTrimmableTypeMapNativeMethods ();
+			// Entry point into Mono.Android.dll for NativeAOT-specific JNI runtime initialization.
+			JNIEnvInit.InitializeNativeAotRuntime (runtime, initArgs);
 
 			transition  = new JniTransition (jnienv);
 
@@ -90,31 +85,5 @@ static partial class JavaInteropRuntime
 			transition.SetPendingException (e);
 		}
 		transition.Dispose ();
-	}
-
-	static JniRuntime.JniTypeManager CreateTypeManager ()
-	{
-		if (RuntimeFeature.TrimmableTypeMap) {
-			return new TrimmableTypeMapTypeManager ();
-		}
-
-		return new ManagedTypeManager ();
-	}
-
-	// Separate method so non-trimmable builds don't try to resolve TypeMapLoader
-	// from the generated _Microsoft.Android.TypeMaps.dll.
-	[MethodImpl (MethodImplOptions.NoInlining)]
-	static void InitializeTrimmableTypeMapData ()
-	{
-		if (RuntimeFeature.TrimmableTypeMap) {
-			TypeMapLoader.Initialize ();
-		}
-	}
-
-	static void RegisterTrimmableTypeMapNativeMethods ()
-	{
-		if (RuntimeFeature.TrimmableTypeMap) {
-			TrimmableTypeMap.RegisterNativeMethods ();
-		}
 	}
 }

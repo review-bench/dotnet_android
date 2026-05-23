@@ -57783,20 +57783,6 @@ System.Drawing.SizeFConverter
 System.Drawing.SizeFConverter.SizeFConverter() -> void
 System.IO.AndroidExtensions
 System.Linq.Extensions
-Xamarin.Android.Net.AndroidClientHandler
-Xamarin.Android.Net.AndroidClientHandler.AndroidClientHandler() -> void
-Xamarin.Android.Net.AndroidClientHandler.AssertSelf() -> void
-Xamarin.Android.Net.AndroidClientHandler.ConnectTimeout.get -> System.TimeSpan
-Xamarin.Android.Net.AndroidClientHandler.ConnectTimeout.set -> void
-Xamarin.Android.Net.AndroidClientHandler.PreAuthenticationData.get -> Xamarin.Android.Net.AuthenticationData?
-Xamarin.Android.Net.AndroidClientHandler.PreAuthenticationData.set -> void
-Xamarin.Android.Net.AndroidClientHandler.ProxyAuthenticationRequested.get -> bool
-Xamarin.Android.Net.AndroidClientHandler.ReadTimeout.get -> System.TimeSpan
-Xamarin.Android.Net.AndroidClientHandler.ReadTimeout.set -> void
-Xamarin.Android.Net.AndroidClientHandler.RequestedAuthentication.get -> System.Collections.Generic.IList<Xamarin.Android.Net.AuthenticationData!>?
-Xamarin.Android.Net.AndroidClientHandler.RequestNeedsAuthorization.get -> bool
-Xamarin.Android.Net.AndroidClientHandler.TrustedCerts.get -> System.Collections.Generic.IList<Java.Security.Cert.Certificate!>?
-Xamarin.Android.Net.AndroidClientHandler.TrustedCerts.set -> void
 Xamarin.Android.Net.AndroidHttpResponseMessage
 Xamarin.Android.Net.AndroidHttpResponseMessage.AndroidHttpResponseMessage() -> void
 Xamarin.Android.Net.AndroidHttpResponseMessage.AndroidHttpResponseMessage(Java.Net.URL! javaUrl, Java.Net.HttpURLConnection! httpConnection) -> void
@@ -102829,8 +102815,6 @@ override System.Drawing.SizeFConverter.CreateInstance(System.ComponentModel.ITyp
 override System.Drawing.SizeFConverter.GetCreateInstanceSupported(System.ComponentModel.ITypeDescriptorContext! context) -> bool
 override System.Drawing.SizeFConverter.GetProperties(System.ComponentModel.ITypeDescriptorContext! context, object! value, System.Attribute![]! attributes) -> System.ComponentModel.PropertyDescriptorCollection?
 override System.Drawing.SizeFConverter.GetPropertiesSupported(System.ComponentModel.ITypeDescriptorContext! context) -> bool
-override Xamarin.Android.Net.AndroidClientHandler.Dispose(bool disposing) -> void
-override Xamarin.Android.Net.AndroidClientHandler.SendAsync(System.Net.Http.HttpRequestMessage! request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
 override Xamarin.Android.Net.AndroidHttpResponseMessage.Dispose(bool disposing) -> void
 override Xamarin.Android.Net.AndroidMessageHandler.Dispose(bool disposing) -> void
 override Xamarin.Android.Net.AndroidMessageHandler.SendAsync(System.Net.Http.HttpRequestMessage! request, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Net.Http.HttpResponseMessage!>!
@@ -134160,14 +134144,6 @@ virtual Org.XmlPull.V1.XmlPullParserFactory.NewSerializer() -> Org.XmlPull.V1.IX
 virtual Org.XmlPull.V1.XmlPullParserFactory.SetFeature(string? name, bool state) -> void
 virtual Org.XmlPull.V1.XmlPullParserFactory.Validating.get -> bool
 virtual Org.XmlPull.V1.XmlPullParserFactory.Validating.set -> void
-virtual Xamarin.Android.Net.AndroidClientHandler.ConfigureCustomSSLSocketFactory(Javax.Net.Ssl.HttpsURLConnection! connection) -> Javax.Net.Ssl.SSLSocketFactory?
-virtual Xamarin.Android.Net.AndroidClientHandler.ConfigureKeyManagerFactory(Java.Security.KeyStore? keyStore) -> Javax.Net.Ssl.KeyManagerFactory?
-virtual Xamarin.Android.Net.AndroidClientHandler.ConfigureKeyStore(Java.Security.KeyStore? keyStore) -> Java.Security.KeyStore?
-virtual Xamarin.Android.Net.AndroidClientHandler.ConfigureTrustManagerFactory(Java.Security.KeyStore? keyStore) -> Javax.Net.Ssl.TrustManagerFactory?
-virtual Xamarin.Android.Net.AndroidClientHandler.GetJavaProxy(System.Uri! destination, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<Java.Net.Proxy?>!
-virtual Xamarin.Android.Net.AndroidClientHandler.GetSSLHostnameVerifier(Javax.Net.Ssl.HttpsURLConnection! connection) -> Javax.Net.Ssl.IHostnameVerifier?
-virtual Xamarin.Android.Net.AndroidClientHandler.SetupRequest(System.Net.Http.HttpRequestMessage! request, Java.Net.HttpURLConnection! conn) -> System.Threading.Tasks.Task!
-virtual Xamarin.Android.Net.AndroidClientHandler.WriteRequestContentToOutput(System.Net.Http.HttpRequestMessage! request, Java.Net.HttpURLConnection! httpConnection, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 virtual Xamarin.Android.Net.AndroidMessageHandler.ConfigureCustomSSLSocketFactory(Javax.Net.Ssl.HttpsURLConnection! connection) -> Javax.Net.Ssl.SSLSocketFactory?
 virtual Xamarin.Android.Net.AndroidMessageHandler.ConfigureKeyManagerFactory(Java.Security.KeyStore? keyStore) -> Javax.Net.Ssl.KeyManagerFactory?
 virtual Xamarin.Android.Net.AndroidMessageHandler.ConfigureKeyStore(Java.Security.KeyStore? keyStore) -> Java.Security.KeyStore?

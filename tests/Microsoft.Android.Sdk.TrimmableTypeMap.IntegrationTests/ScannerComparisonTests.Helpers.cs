@@ -74,13 +74,42 @@ public partial class ScannerComparisonTests
 
 	static string NormalizeCrc64 (string javaName)
 	{
-		if (javaName.StartsWith ("crc64", StringComparison.Ordinal)) {
+		// The legacy generator always produces "crc64<hash>/..." while the new scanner
+		// produces "scrc64<hash>/..." (System.IO.Hashing CRC64) by default.  Normalize both
+		// to a single sentinel so the type maps can be compared structurally.
+		bool hasCrc64Prefix = javaName.StartsWith ("crc64", StringComparison.Ordinal)
+			|| javaName.StartsWith ("scrc64", StringComparison.Ordinal);
+		if (hasCrc64Prefix) {
 			int slash = javaName.IndexOf ('/');
 			if (slash > 0) {
 				return "crc64.../" + javaName.Substring (slash + 1);
 			}
 		}
 		return javaName;
+	}
+
+	static string NormalizeCrc64InJniValue (string value)
+	{
+		// Marshal-method signatures/connectors can embed generated user-peer JNI names.
+		// Normalize the hash portion there too so legacy/new scanner comparison stays
+		// structural instead of depending on the CRC64 implementation.
+		return System.Text.RegularExpressions.Regex.Replace (value, @"s?crc64[0-9a-f]{16}", "crc64...");
+	}
+
+	static List<TypeMethodGroup> NormalizeMethodGroups (List<TypeMethodGroup> groups)
+	{
+		return groups
+			.Select (g => new TypeMethodGroup (
+				g.ManagedName,
+				g.Methods
+					.Select (m => new MethodEntry (
+						NormalizeCrc64 (m.JniName),
+						NormalizeCrc64InJniValue (m.JniSignature),
+						m.Connector is null ? null : NormalizeCrc64InJniValue (m.Connector)
+					))
+					.ToList ()
+			))
+			.ToList ();
 	}
 
 	void AssertTypeMapMatch (List<TypeMapEntry> legacy, List<TypeMapEntry> newEntries)

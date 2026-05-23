@@ -33,6 +33,7 @@ public class TrimmableTypeMapGenerator
 		bool useSharedTypemapUniverse = false,
 		ManifestConfig? manifestConfig = null,
 		XDocument? manifestTemplate = null,
+		string? packageNamingPolicy = null,
 		int maxArrayRank = 0)
 	{
 		_ = assemblies ?? throw new ArgumentNullException (nameof (assemblies));
@@ -41,7 +42,8 @@ public class TrimmableTypeMapGenerator
 		if (maxArrayRank < 0) {
 			throw new ArgumentOutOfRangeException (nameof (maxArrayRank), maxArrayRank, "Must be >= 0.");
 		}
-		var (allPeers, assemblyManifestInfo) = ScanAssemblies (assemblies);
+
+		var (allPeers, assemblyManifestInfo) = ScanAssemblies (assemblies, packageNamingPolicy, frameworkAssemblyNames);
 		if (allPeers.Count == 0) {
 			logger.LogNoJavaPeerTypesFound ();
 			return new TrimmableTypeMapResult ([], [], allPeers);
@@ -51,10 +53,12 @@ public class TrimmableTypeMapGenerator
 		PropagateDeferredRegistrationToBaseClasses (allPeers);
 		PropagateCannotRegisterToDescendants (allPeers);
 
-		var generatedAssemblies = GenerateTypeMapAssemblies (allPeers, systemRuntimeVersion, useSharedTypemapUniverse, maxArrayRank);
-		var jcwPeers = allPeers.Where (p =>
-			!frameworkAssemblyNames.Contains (p.AssemblyName)
-			|| p.JavaName.StartsWith ("mono/", StringComparison.Ordinal)).ToList ();
+		var generatedAssemblies = GenerateTypeMapAssemblies (
+			allPeers,
+			systemRuntimeVersion,
+			useSharedTypemapUniverse,
+			maxArrayRank);
+		var jcwPeers = allPeers.Where (ShouldGenerateJcw).ToList ();
 		logger.LogGeneratingJcwFilesInfo (jcwPeers.Count, allPeers.Count);
 		var generatedJavaSources = GenerateJcwJavaSources (jcwPeers);
 
@@ -97,6 +101,24 @@ public class TrimmableTypeMapGenerator
 		return appRegTypes;
 	}
 
+	static bool ShouldGenerateJcw (JavaPeerInfo peer)
+	{
+		if (peer.DoNotGenerateAcw || peer.IsInterface) {
+			return false;
+		}
+
+		return HasNonEmptyJniNameSegments (peer.JavaName);
+	}
+
+	static bool HasNonEmptyJniNameSegments (string jniName)
+	{
+		if (jniName.Length == 0 || jniName [0] == '/' || jniName [jniName.Length - 1] == '/') {
+			return false;
+		}
+
+		return !jniName.Contains ("//", StringComparison.Ordinal);
+	}
+
 	GeneratedManifest GenerateManifest (List<JavaPeerInfo> allPeers, AssemblyManifestInfo assemblyManifestInfo,
 		ManifestConfig config, XDocument? manifestTemplate)
 	{
@@ -133,16 +155,20 @@ public class TrimmableTypeMapGenerator
 		return new GeneratedManifest (doc, providerNames.Count > 0 ? providerNames.ToArray () : []);
 	}
 
-	(List<JavaPeerInfo> peers, AssemblyManifestInfo manifestInfo) ScanAssemblies (IReadOnlyList<(string Name, PEReader Reader)> assemblies)
+	(List<JavaPeerInfo> peers, AssemblyManifestInfo manifestInfo) ScanAssemblies (IReadOnlyList<(string Name, PEReader Reader)> assemblies, string? packageNamingPolicy, HashSet<string> frameworkAssemblyNames)
 	{
-		using var scanner = new JavaPeerScanner ();
+		using var scanner = new JavaPeerScanner (packageNamingPolicy, logger, frameworkAssemblyNames);
 		var peers = scanner.Scan (assemblies);
 		var manifestInfo = scanner.ScanAssemblyManifestInfo ();
 		logger.LogJavaPeerScanInfo (assemblies.Count, peers.Count);
 		return (peers, manifestInfo);
 	}
 
-	List<GeneratedAssembly> GenerateTypeMapAssemblies (List<JavaPeerInfo> allPeers, Version systemRuntimeVersion, bool useSharedTypemapUniverse, int maxArrayRank)
+	List<GeneratedAssembly> GenerateTypeMapAssemblies (
+		List<JavaPeerInfo> allPeers,
+		Version systemRuntimeVersion,
+		bool useSharedTypemapUniverse,
+		int maxArrayRank)
 	{
 		List<(string AssemblyName, List<JavaPeerInfo> Peers)> peersByAssembly;
 

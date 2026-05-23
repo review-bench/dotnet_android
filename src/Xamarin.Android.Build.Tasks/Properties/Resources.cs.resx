@@ -478,30 +478,6 @@ In this message, the term "binding" means a piece of generated code that makes i
     <value>Vlastnost MSBuild RunAOTCompilation se podporuje jen tehdy, když je povolené trimování. Upravte soubor projektu v textovém editoru, aby se vlastnost PublishTrimmed pro tuto konfiguraci sestavení nastavila na true.</value>
     <comment>The following are literal names and should not be translated: 'RunAOTCompilation', 'PublishTrimmed'</comment>
   </data>
-  <data name="XA1031" xml:space="preserve">
-    <value>Hodnota vlastnosti AndroidHttpClientHandlerType {0} musí být odvozena od {1}.
-Změňte hodnotu na název typu kvalifikovaného sestavení, který dědí z: {1}, případně vlastnost úplně odeberte.</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType',
-{0} - The value of the property.
-{1} - A type from which the AndroidHttpClientHandlerType should derive .</comment>
-  </data>
-  <data name="XA1031_HCH" xml:space="preserve">
-    <value>Hodnota vlastnosti AndroidHttpClientHandlerType {0} nesmí být odvozena od System.Net.Htt.HttpClientHandler.
-Změňte prosím hodnotu na název typu kvalifikovaného sestavení, který dědí z System.Net.Http.HttpMessageHandler, nebo tuto vlastnost úplně odeberte.</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType', 'System.Net.Htt.HttpClientHandler', 'System.Net.Http.HttpMessageHandler',
-{0} - The value of the property.</comment>
-  </data>
-  <data name="XA1032" xml:space="preserve">
-    <value>Nepovedlo se přeložit {0} z(e) {1}. Zkontrolujte nastavení AndroidHttpClientHandlerType.</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType',
-{0} - The value of the property.
-{1} - The name of the assembly.</comment>
-  </data>
-  <data name="XA1033" xml:space="preserve">
-    <value>Nepovedlo se přeložit {0}. Zkontrolujte nastavení AndroidHttpClientHandlerType.</value>
-    <comment>The following are literal names and should not be translated: 'AndroidHttpClientHandlerType',
-{0} - The value of the property.</comment>
-  </data>
   <data name="XA1034" xml:space="preserve">
     <value>Váš projekt odkazuje na literál {0}, který používá sestavení _Microsoft.Android.Resource.Designer, ale tuto funkci nemáte povolenou. Nastavte vlastnost MSBuild AndroidUseDesignerAssembly v souboru projektu na hodnotu true.</value>
     <comment>The following are literal names and should not be translated: '_Microsoft.Android.Resource.Desinger', 'AndroidUseDesignerAssembly', 'true'
@@ -589,6 +565,10 @@ Buď změňte hodnotu v souboru AndroidManifest.xml tak, aby odpovídala hodnot�
     <value>Nepovedlo se připojit nativní sdílenou knihovnu: {0}{1}</value>
     <comment>The '{1}' placeholder is replaced with full output of the failed command, starting and ending with a newline.</comment>
   </data>
+  <data name="XA3008" xml:space="preserve">
+    <value>Failed to extract debug info from '{0}'{1}</value>
+    <comment>'{0}' is the native shared library filename. '{1}' is the full output of the failed command, starting and ending with a newline.</comment>
+  </data>
   <data name="XA4209" xml:space="preserve">
     <value>Kvůli {1} se nepovedlo vygenerovat typ Javy pro třídu {0}.</value>
     <comment>{0} - The managed type name
@@ -647,6 +627,12 @@ Buď změňte hodnotu v souboru AndroidManifest.xml tak, aby odpovídala hodnot�
 {0} - The target SDK version number
 {1} - The API version number</comment>
   </data>
+  <data name="XA4217" xml:space="preserve">
+    <value>Architecture '{0}' has Java types which have no counterparts in template architecture '{1}': {2}</value>
+    <comment>{0} - The target architecture name
+{1} - The template architecture name
+{2} - Comma-separated list of Java type names that have no counterparts</comment>
+  </data>
   <data name="XA4218" xml:space="preserve">
     <value>Nepodařilo se najít položku //manifest/application/uses-library v cestě: {0}</value>
     <comment>The following are literal names and should not be translated: //manifest/application/uses-library</comment>
@@ -697,6 +683,11 @@ In this mesage, the term "layout" means an Android UI layout.
     <value>Položka prostředku {0} nemá požadovanou položku metadat {1}.</value>
     <comment>{0} - The name of the Android layout resource file
 {1} - The name of the metadata item</comment>
+  </data>
+  <data name="XA4227" xml:space="preserve">
+    <value>Architecture '{0}' doesn't match all marshal methods in architecture '{1}'. Please see detailed MSBuild logs for more information.</value>
+    <comment>{0} - The target architecture name
+{1} - The template architecture name</comment>
   </data>
   <data name="XA4228" xml:space="preserve">
     <value>Nepovedlo se najít zadané //activity-alias/@android:targetActivity: {0}</value>
@@ -920,6 +911,12 @@ Pokud chcete pro sestavení z příkazového řádku použít vlastní cestu JDK
   <data name="XA5302" xml:space="preserve">
     <value>Tento projekt možná sestavují dva procesy najednou. Na následující cestě existuje soubor zámku: {0}</value>
   </data>
+  <data name="XA5303" xml:space="preserve">
+    <value>Failed to parse 'DescriptorIndex' metadata value '{0}' for assembly '{1}'.</value>
+    <comment>
+{0} - The DescriptorIndex metadata value that could not be parsed
+{1} - The assembly ItemSpec</comment>
+  </data>
   <data name="XA_Manifest_AutoGenerated_Header" xml:space="preserve">
     <value>
     Tento kód byl vygenerován pomocí nástroje.
@@ -1015,6 +1012,18 @@ Pokud chcete pro sestavení z příkazového řádku použít vlastní cestu JDK
 {1} - The name of the .NET runtime (e.g. CoreCLR, NativeAOT).
 </comment>
   </data>
+  <data name="XA1045" xml:space="preserve">
+    <value>Vstupní soubor `{0}` nezačíná na `&lt;replacements/&gt;`.</value>
+    <comment>{0} - file path</comment>
+  </data>
+  <data name="XA1046" xml:space="preserve">
+    <value>Atribut {0} v elementu {1} má hodnotu {2}, kterou nelze analyzovat jako logickou hodnotu; {3} – řádek {4}.</value>
+    <comment>{0} - attribute name; {1} - element name; {2} - attribute value; {3} - file path; {4} - line number</comment>
+  </data>
+  <data name="XA1047" xml:space="preserve">
+    <value>Požadovaný atribut {0} chybí v elementu {1}; {3} – řádek {2}.</value>
+    <comment>{0} - attribute name; {1} - element name; {2} - file path; {3} - line number</comment>
+  </data>
   <data name="XA4241" xml:space="preserve">
     <value>Závislosti Java {0} není vyhověno.</value>
     <comment>The following are literal names and should not be translated: Java.
@@ -1079,6 +1088,20 @@ Pokud chcete pro sestavení z příkazového řádku použít vlastní cestu JDK
     <value>Typ {0}, na který se odkazuje v manifestu, nebyl nalezen v žádném prohledaném sestavení. Může se jednat o typ architektury.</value>
     <comment>The following are literal names and should not be translated: Manifest, framework.
 {0} - Java type name from AndroidManifest.xml</comment>
+  </data>
+  <data name="XA4251" xml:space="preserve">
+    <value>Typ {0} používá atribut [JniAddNativeMethodRegistrationAttribute], což mapování ořezávatelných typů nepodporuje. Tento problém můžete obejít tak, že nepoužijete mapování ořezávatelných typů, například přepnutím na implementaci mapování typů llvm-ir, a nahlásíte tento scénář na https://github.com/dotnet/android/issues, aby tým mohl vyhodnotit, jestli pro něj zavede podporu.</value>
+    <comment>The following are literal names and should not be translated: JniAddNativeMethodRegistrationAttribute, llvm-ir.
+{0} - Fully-qualified managed type name</comment>
+  </data>
+  <data name="XA4252" xml:space="preserve">
+    <value>Adresa URL nezabezpečeného úložiště Maven {0} není povolena. Pokud chcete tuto kontrolu přepsat, použijte adresu URL HTTPS nebo nastavte u položky metadata AllowInsecureHttp="true".</value>
+    <comment>The following are literal names and should not be translated: HTTP, HTTPS, Maven, AllowInsecureHttp
+{0} - The insecure HTTP URL</comment>
+  </data>
+  <data name="XA4253" xml:space="preserve">
+    <value>Generated Java callable wrapper code changed: '{0}'</value>
+    <comment>{0} - The path to the generated Java callable wrapper file</comment>
   </data>
   <data name="XA0142" xml:space="preserve">
     <value>Příkaz {0} selhal.\n{1}</value>

@@ -135,6 +135,54 @@ public class ModelBuilderTests : FixtureTestBase
 			// Both peers get associations to alias holder
 			Assert.Equal (2, model.Associations.Count);
 		}
+
+		[Fact]
+		public void Build_AllMcwAliasGroup_BaseEntryIsConditional ()
+		{
+			// When all peers in an alias group are MCW bindings (trimmable),
+			// the base alias-holder entry should be conditional (3-arg).
+			var peers = new List<JavaPeerInfo> {
+				MakeMcwPeer ("test/AllMcw", "Test.First", "A") with { DoNotGenerateAcw = true },
+				MakeMcwPeer ("test/AllMcw", "Test.Second", "A") with { DoNotGenerateAcw = true },
+			};
+
+			var model = BuildModel (peers);
+			var baseEntry = model.Entries.Single (e => e.JniName == "test/AllMcw");
+			Assert.False (baseEntry.IsUnconditional, "All-MCW alias group base entry should be conditional");
+			Assert.NotNull (baseEntry.TargetTypeReference);
+		}
+
+		[Fact]
+		public void Build_MixedAcwMcwAliasGroup_BaseEntryIsUnconditional ()
+		{
+			// When at least one peer in an alias group is an ACW (unconditional),
+			// the base alias-holder entry should be unconditional (2-arg).
+			var peers = new List<JavaPeerInfo> {
+				MakeMcwPeer ("test/Mixed", "Test.Mcw", "A") with { DoNotGenerateAcw = true },
+				MakeAcwPeer ("test/Mixed", "Test.Acw", "A"),
+			};
+
+			var model = BuildModel (peers);
+			var baseEntry = model.Entries.Single (e => e.JniName == "test/Mixed");
+			Assert.True (baseEntry.IsUnconditional, "Mixed alias group with ACW should have unconditional base entry");
+			Assert.Null (baseEntry.TargetTypeReference);
+		}
+
+		[Fact]
+		public void Build_EssentialTypeAliasGroup_BaseEntryIsUnconditional ()
+		{
+			// Essential runtime types (java/lang/Object etc.) should always be unconditional,
+			// even when all peers are MCW bindings.
+			var peers = new List<JavaPeerInfo> {
+				MakeMcwPeer ("java/lang/Object", "Java.Lang.Object", "Mono.Android"),
+				MakeMcwPeer ("java/lang/Object", "Java.Lang.Another", "Mono.Android"),
+			};
+
+			var model = BuildModel (peers);
+			var baseEntry = model.Entries.Single (e => e.JniName == "java/lang/Object");
+			Assert.True (baseEntry.IsUnconditional, "Essential type alias group should have unconditional base entry");
+			Assert.Null (baseEntry.TargetTypeReference);
+		}
 	}
 
 	public class ConditionalAttributes
@@ -172,14 +220,12 @@ public class ModelBuilderTests : FixtureTestBase
 		public void Build_McwBinding_IsTrimmable ()
 		{
 			// MCW binding types (DoNotGenerateAcw=true) are trimmable unless essential.
-			// When ForceUnconditionalEntries is enabled (workaround for dotnet/runtime#127004),
-			// all entries become unconditional.
 			var peer = MakeMcwPeer ("android/app/Activity", "Android.App.Activity", "Mono.Android") with { DoNotGenerateAcw = true };
 			var model = BuildModel (new [] { peer });
 
 			Assert.Single (model.Entries);
-			Assert.True (model.Entries [0].IsUnconditional);
-			Assert.Null (model.Entries [0].TargetTypeReference);
+			Assert.False (model.Entries [0].IsUnconditional);
+			Assert.Equal ("Android.App.Activity, Mono.Android", model.Entries [0].TargetTypeReference);
 		}
 
 		[Fact]
@@ -194,6 +240,23 @@ public class ModelBuilderTests : FixtureTestBase
 
 			Assert.True (model.Entries [0].IsUnconditional);
 		}
+
+		[Fact]
+		public void Build_FrameworkAcwType_IsConditional ()
+		{
+			var frameworkAcwPeer = MakeAcwPeer ("mono/android/view/View_ClickEventDispatcher", "Android.Views.View_ClickEventDispatcher", "Mono.Android") with {
+				IsFrameworkAssembly = true,
+			};
+			var appAcwPeer = MakeAcwPeer ("my/app/MyActivity", "MyApp.MyActivity", "MyApp");
+
+			Assert.False (
+				BuildModel ([frameworkAcwPeer]).Entries.Single ().IsUnconditional,
+				"Framework ACWs should not unconditionally root their proxy types.");
+			Assert.True (
+				BuildModel ([appAcwPeer]).Entries.Single ().IsUnconditional,
+				"Application ACWs must remain unconditional because Java can instantiate them.");
+		}
+
 	}
 
 	public class Aliases
@@ -248,8 +311,8 @@ public class ModelBuilderTests : FixtureTestBase
 		[Fact]
 		public void Build_SinglePeer_HasAssociation ()
 		{
-			// When ForceUnconditionalEntries is enabled, single peers emit associations
-			// so the runtime proxy type map is populated.
+			// Single peers with generated proxies emit associations so the runtime proxy
+			// type map is populated.
 			var peer = MakePeerWithActivation ("my/app/MainActivity", "MyApp.MainActivity", "App");
 			var model = BuildModel (new [] { peer }, "MyTypeMap");
 
@@ -278,7 +341,7 @@ public class ModelBuilderTests : FixtureTestBase
 		public void Build_Crc64RenamedPeer_StoresFinalJavaNameOnProxy (string managedName)
 		{
 			var peer = FindFixtureByManagedName (managedName);
-			Assert.StartsWith ("crc64", peer.JavaName);
+			Assert.StartsWith ("scrc64", peer.JavaName);
 			Assert.NotEqual (peer.CompatJniName, peer.JavaName);
 
 			var model = BuildModel (new [] { peer }, "MyTypeMap");
@@ -338,8 +401,8 @@ public class ModelBuilderTests : FixtureTestBase
 			var peer = FindFixtureByJavaName (javaName);
 			Assert.True (peer.DoNotGenerateAcw);
 			var model = BuildModel (new [] { peer });
-			// ForceUnconditionalEntries workaround makes all entries unconditional
-			Assert.True (model.Entries [0].IsUnconditional);
+			Assert.False (model.Entries [0].IsUnconditional);
+			Assert.NotNull (model.Entries [0].TargetTypeReference);
 		}
 	}
 
@@ -776,7 +839,6 @@ public class ModelBuilderTests : FixtureTestBase
 		[Fact]
 		public void FullPipeline_Mixed2ArgAnd3Arg_BothSurviveRoundTrip ()
 		{
-			// With ForceUnconditionalEntries, both are emitted as 2-arg unconditional
 			var objectPeer = FindFixtureByJavaName ("java/lang/Object");
 			var activityPeer = FindFixtureByJavaName ("android/app/Activity");
 
@@ -793,7 +855,7 @@ public class ModelBuilderTests : FixtureTestBase
 
 				var activityEntry = attrs.FirstOrDefault (a => a.jniName == "android/app/Activity");
 				Assert.NotNull (activityEntry.jniName);
-				Assert.Null (activityEntry.targetRef); // unconditional due to ForceUnconditionalEntries
+				Assert.Equal ("Android.App.Activity, TestFixtures", activityEntry.targetRef);
 			});
 		}
 
@@ -818,22 +880,20 @@ public class ModelBuilderTests : FixtureTestBase
 		}
 
 		[Fact]
-		public void FullPipeline_McwBinding_Emits2ArgAttribute_WithWorkaround ()
+		public void FullPipeline_McwBinding_Emits3ArgAttribute ()
 		{
-			// With ForceUnconditionalEntries workaround for dotnet/runtime#127004,
-			// MCW bindings are emitted as 2-arg unconditional.
 			var peer = FindFixtureByJavaName ("android/app/Activity");
-			var model = BuildModel (new [] { peer }, "Blob2ArgWorkaround");
+			var model = BuildModel (new [] { peer }, "Blob3ArgConditional");
 			Assert.Single (model.Entries);
-			Assert.True (model.Entries [0].IsUnconditional);
+			Assert.False (model.Entries [0].IsUnconditional);
 
-			EmitAndVerify (model, "Blob2ArgWorkaround", (pe, reader) => {
+			EmitAndVerify (model, "Blob3ArgConditional", (pe, reader) => {
 				var (jniName, proxyRef, targetRef) = ReadFirstTypeMapAttributeBlob (reader);
 
 				Assert.Equal ("android/app/Activity", jniName);
 				Assert.NotNull (proxyRef);
 				Assert.Contains ("Android_App_Activity_Proxy", proxyRef!);
-				Assert.Null (targetRef); // unconditional due to ForceUnconditionalEntries
+				Assert.Equal ("Android.App.Activity, TestFixtures", targetRef);
 			});
 		}
 	}
@@ -963,6 +1023,28 @@ public class ModelBuilderTests : FixtureTestBase
 			var model = BuildModelWithArrays (new [] { openGeneric });
 
 			Assert.DoesNotContain (model.Entries, e => e.AnchorRank is not null);
+		}
+
+		[Fact]
+		public void Build_EmitArrayEntries_FrameworkPeer_Skipped ()
+		{
+			var frameworkPeer = MakeMcwPeer ("android/widget/Button", "Android.Widget.Button", "Mono.Android")
+				with { IsFrameworkAssembly = true, GenerateArrayEntries = false };
+			var model = BuildModelWithArrays (new [] { frameworkPeer });
+
+			Assert.DoesNotContain (model.Entries, e => e.AnchorRank is not null);
+		}
+
+		[Fact]
+		public void Build_EmitArrayEntries_ReferencedFrameworkPeer_Emitted ()
+		{
+			var frameworkPeer = MakeMcwPeer ("android/widget/Button", "Android.Widget.Button", "Mono.Android")
+				with { IsFrameworkAssembly = true, GenerateArrayEntries = true };
+			var model = BuildModelWithArrays (new [] { frameworkPeer });
+
+			var arrayEntries = model.Entries.Where (e => e.AnchorRank is not null).ToList ();
+			Assert.Equal (3, arrayEntries.Count);
+			Assert.All (arrayEntries, e => Assert.Equal ("android/widget/Button", e.JniName));
 		}
 
 		[Fact]
@@ -1250,8 +1332,15 @@ public class ModelBuilderTests : FixtureTestBase
 		{
 			var peer = MakeAcwPeer ("my/app/Baz", "MyApp.Baz", "App") with {
 				JavaConstructors = new List<JavaConstructorInfo> {
-					new JavaConstructorInfo { ConstructorIndex = 0, JniSignature = "()V" },
-					new JavaConstructorInfo { ConstructorIndex = 1, JniSignature = "(Landroid/content/Context;)V" },
+					new JavaConstructorInfo { ConstructorIndex = 0, JniSignature = "()V", HasMatchingManagedCtor = true },
+					new JavaConstructorInfo {
+						ConstructorIndex = 1,
+						JniSignature = "(Landroid/content/Context;)V",
+						HasMatchingManagedCtor = true,
+						ManagedParameterTypes = [
+							new TypeRefData { ManagedTypeName = "Android.Content.Context", AssemblyName = "Mono.Android" },
+						],
+					},
 				},
 			};
 			var model = BuildModel (new [] { peer });
@@ -1266,6 +1355,39 @@ public class ModelBuilderTests : FixtureTestBase
 			var peer = MakeMcwPeer ("test/NoActivation", "Test.NoActivation", "Asm");
 			var model = BuildModel (new [] { peer });
 			Assert.Empty (model.ProxyTypes);
+		}
+
+		[Fact]
+		public void Build_ExportConstructorWithoutMatchingManagedCtor_Throws ()
+		{
+			var peer = MakeAcwPeer ("my/app/MissingCtor", "MyApp.MissingCtor", "App") with {
+				JavaConstructors = new List<JavaConstructorInfo> {
+					new JavaConstructorInfo { ConstructorIndex = 0, JniSignature = "()V", HasMatchingManagedCtor = false, SuperArgumentsString = "" },
+				},
+			};
+			var ex = Assert.Throws<InvalidOperationException> (() => BuildModel (new [] { peer }));
+			Assert.Contains ("no matching user-visible managed constructor", ex.Message);
+			Assert.Contains ("MyApp.MissingCtor", ex.Message);
+		}
+
+		[Fact]
+		public void Build_AbstractTypeWithProtectedCtor_NoUcoConstructors ()
+		{
+			var peer = MakeAcwPeer ("my/app/AbstractAdapter", "MyApp.AbstractAdapter", "App") with {
+				IsAbstract = true,
+				JavaConstructors = new List<JavaConstructorInfo> {
+					new JavaConstructorInfo {
+						ConstructorIndex = 0,
+						JniSignature = "(Landroid/content/Context;)V",
+						HasMatchingManagedCtor = false,
+						SuperArgumentsString = "p0",
+					},
+				},
+			};
+			var model = BuildModel (new [] { peer });
+			var proxy = model.ProxyTypes.FirstOrDefault (p => p.TypeName.Contains ("AbstractAdapter"));
+			Assert.NotNull (proxy);
+			Assert.Empty (proxy.UcoConstructors);
 		}
 	}
 
@@ -1287,7 +1409,7 @@ public class ModelBuilderTests : FixtureTestBase
 					},
 				},
 				JavaConstructors = new List<JavaConstructorInfo> {
-					new JavaConstructorInfo { ConstructorIndex = 0, JniSignature = "()V" },
+					new JavaConstructorInfo { ConstructorIndex = 0, JniSignature = "()V", HasMatchingManagedCtor = true },
 				},
 			};
 			var model = BuildModel (new [] { peer });
@@ -1341,6 +1463,58 @@ public class ModelBuilderTests : FixtureTestBase
 			var proxy = model.ProxyTypes.FirstOrDefault ();
 			Assert.NotNull (proxy);
 			Assert.True (proxy.UcoMethods.Count >= 2, "TouchHandler should have multiple UCO methods");
+		}
+
+		[Fact]
+		public void Fixture_ExportExample_UsesExportMethodDispatch ()
+		{
+			var peer = FindFixtureByJavaName ("my/app/ExportExample");
+			var model = BuildModel (new [] { peer }, "TypeMap");
+			var proxy = model.ProxyTypes.FirstOrDefault ();
+			Assert.NotNull (proxy);
+			var exportUco = Assert.Single (proxy.UcoMethods);
+			var exportDispatch = exportUco.ExportMethodDispatch;
+			Assert.True (exportUco.UsesExportMethodDispatch);
+			Assert.NotNull (exportDispatch);
+			Assert.Equal ("MyExportedMethod", exportDispatch.ManagedMethodName);
+		}
+
+		[Fact]
+		public void Fixture_StaticExportExample_UsesStaticExportMethodDispatch ()
+		{
+			var peer = FindFixtureByJavaName ("my/app/StaticExportExample");
+			var model = BuildModel (new [] { peer }, "TypeMap");
+			var proxy = model.ProxyTypes.FirstOrDefault ();
+			Assert.NotNull (proxy);
+			var exportUco = Assert.Single (proxy.UcoMethods);
+			var exportDispatch = exportUco.ExportMethodDispatch;
+			Assert.True (exportUco.UsesExportMethodDispatch);
+			Assert.NotNull (exportDispatch);
+			Assert.True (exportDispatch.IsStatic);
+			Assert.Equal ("ComputeLabel", exportDispatch.ManagedMethodName);
+		}
+
+		[Fact]
+		public void Fixture_ExportMarshallingShapes_PropagatesExactManagedTypeMetadata ()
+		{
+			var peer = FindFixtureByJavaName ("my/app/ExportMarshallingShapes");
+			var model = BuildModel (new [] { peer }, "TypeMap");
+			var proxy = model.ProxyTypes.FirstOrDefault ();
+			Assert.NotNull (proxy);
+
+			var xmlUco = proxy.UcoMethods.First (u => u.ExportMethodDispatch?.ManagedMethodName == "ReadXml");
+			var xmlDispatch = xmlUco.ExportMethodDispatch;
+			Assert.NotNull (xmlDispatch);
+			Assert.Equal ("System.Xml.XmlReader", xmlDispatch.ParameterTypes [0].ManagedTypeName);
+			Assert.Equal ("System.Xml.ReaderWriter", xmlDispatch.ParameterTypes [0].AssemblyName);
+			Assert.Equal (ExportParameterKindInfo.XmlPullParser, xmlDispatch.ParameterKinds [0]);
+			Assert.Equal (ExportParameterKindInfo.XmlPullParser, xmlDispatch.ReturnKind);
+
+			var resourceXmlUco = proxy.UcoMethods.First (u => u.ExportMethodDispatch?.ManagedMethodName == "ReadResourceXml");
+			var resourceXmlDispatch = resourceXmlUco.ExportMethodDispatch;
+			Assert.NotNull (resourceXmlDispatch);
+			Assert.Equal (ExportParameterKindInfo.XmlResourceParser, resourceXmlDispatch.ParameterKinds [0]);
+			Assert.Equal (ExportParameterKindInfo.XmlResourceParser, resourceXmlDispatch.ReturnKind);
 		}
 
 		[Fact]
